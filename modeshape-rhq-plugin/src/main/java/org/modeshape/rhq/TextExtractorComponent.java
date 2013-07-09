@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.modeshape.rhq.util.I18n;
-import org.rhq.core.domain.configuration.Property;
 import org.rhq.core.domain.configuration.PropertyList;
 import org.rhq.core.domain.configuration.PropertyMap;
 import org.rhq.core.domain.configuration.PropertySimple;
@@ -35,20 +34,20 @@ import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 
 /**
- * The ModeShape RHQ AS 7 external source (connector) component.
+ * The ModeShape RHQ AS 7 text extractor component.
  */
-public final class ConnectorComponent extends ModeShapeComponent {
+public final class TextExtractorComponent extends ModeShapeComponent {
 
     /**
-     * The connector component type.
+     * The text extractor component type.
      */
-    public static final String TYPE = "source";
+    public static final String TYPE = "text-extractor";
 
     /**
      * Constructs a connector component.
      */
-    public ConnectorComponent() {
-        super(TYPE, PluginI18n.connectorDisplayName, PluginI18n.connectorDescription);
+    public TextExtractorComponent() {
+        super(TYPE, PluginI18n.textExtractorDisplayName, PluginI18n.textExtractorDescription);
     }
 
     /**
@@ -70,7 +69,8 @@ public final class ConnectorComponent extends ModeShapeComponent {
 
             if ((tempResult != null) && (tempResult instanceof Map<?, ?>)) {
                 final Map<?, ?> propMap = (Map<?, ?>)tempResult;
-                ModeShapePlugin.LOG.debug("Loading " + propMap.size() + " properties for connector '" + deploymentName() + '\'');
+                ModeShapePlugin.LOG.debug("Loading " + propMap.size() + " properties for text extractor '" + deploymentName()
+                                          + '\'');
                 loadProperties(propMap);
             } else {
                 success = false;
@@ -108,15 +108,6 @@ public final class ConnectorComponent extends ModeShapeComponent {
             }
 
             resourceConfiguration().put(values);
-        } else if (RhqId.PROJECTIONS.equals(name)) {
-            final PropertyList values = new PropertyList(name);
-
-            for (final Object obj : valueList) {
-                final Property prop = new PropertySimple(RhqId.PROJECTION, obj);
-                values.add(prop);
-            }
-
-            resourceConfiguration().put(values);
         } else {
             throw new Exception(I18n.bind(PluginI18n.unknownProperty, name, deploymentName(), type()));
         }
@@ -131,10 +122,7 @@ public final class ConnectorComponent extends ModeShapeComponent {
     protected void loadProperty( final String name,
                                  final String value ) throws Exception {
         // list/map properties without values must still be loaded as list/map
-        if (RhqId.PROJECTIONS.equals(name)) {
-            final PropertyList values = new PropertyList(RhqId.PROJECTION); // no values so empty list
-            resourceConfiguration().put(values);
-        } else if (RhqId.PROPERTIES.equals(name)) {
+        if (RhqId.PROPERTIES.equals(name)) {
             final PropertyList values = new PropertyList(RhqId.PROPERTIES);
             final PropertyMap map = new PropertyMap(RhqId.PROPERTY); // no values so empty map
             values.add(map);
@@ -149,8 +137,6 @@ public final class ConnectorComponent extends ModeShapeComponent {
      */
     private interface RhqId {
         String NAME = "name";
-        String PROJECTION = "projection";
-        String PROJECTIONS = "projections";
         String PROPERTIES = "properties";
         String PROPERTY = "property";
         String VALUE = "value";

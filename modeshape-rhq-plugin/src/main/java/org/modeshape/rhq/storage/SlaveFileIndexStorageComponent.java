@@ -21,32 +21,25 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.modeshape.rhq.util;
+package org.modeshape.rhq.storage;
+
+import org.modeshape.rhq.PluginI18n;
 
 /**
- * Localized messages for the modeshape-rhq-plugin/org.modeshape.rhq.util package.
+ * The ModeShape RHQ AS 7 slave file index storage component.
  */
-public class UtilI18n extends I18n {
-
-    public static String collectionIsEmpty;
-    public static String missingI18Field;
-    public static String missingPropertiesKey;
-    public static String numberIsNotPositive;
-    public static String problemAccessingI18Field;
-    public static String problemLoadingI18nClass;
-    public static String problemLoadingI18nProperties;
-    public static String stringIsEmpty;
-
-    static {
-        final UtilI18n i18n = new UtilI18n();
-        i18n.initialize();
-    }
+public final class SlaveFileIndexStorageComponent extends ModeShapeStorageComponent {
 
     /**
-     * Don't allow construction outside of this class.
+     * The cache binary storage component type.
      */
-    private UtilI18n() {
-        // nothing to do
+    public static final String TYPE = "slave-file-index-storagee";
+
+    /**
+     * Constructs a slave file index storage component.
+     */
+    public SlaveFileIndexStorageComponent() {
+        super(TYPE, PluginI18n.slaveFileIndexStorageDisplayName, PluginI18n.slaveFileIndexStorageDescription, StorageType.INDEX);
     }
 
 }

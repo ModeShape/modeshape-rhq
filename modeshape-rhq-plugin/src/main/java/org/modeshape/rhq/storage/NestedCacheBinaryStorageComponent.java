@@ -21,32 +21,40 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.modeshape.rhq.util;
+package org.modeshape.rhq.storage;
+
+import org.modeshape.rhq.PluginI18n;
+import org.rhq.modules.plugins.jbossas7.json.Address;
 
 /**
- * Localized messages for the modeshape-rhq-plugin/org.modeshape.rhq.util package.
+ * The ModeShape RHQ AS 7 nested cache binary storage component.
  */
-public class UtilI18n extends I18n {
+public final class NestedCacheBinaryStorageComponent extends ModeShapeStorageComponent {
 
-    public static String collectionIsEmpty;
-    public static String missingI18Field;
-    public static String missingPropertiesKey;
-    public static String numberIsNotPositive;
-    public static String problemAccessingI18Field;
-    public static String problemLoadingI18nClass;
-    public static String problemLoadingI18nProperties;
-    public static String stringIsEmpty;
+    /**
+     * The nested cache binary storage component type.
+     */
+    public static final String TYPE = "nested-storage-type-cache";
 
-    static {
-        final UtilI18n i18n = new UtilI18n();
-        i18n.initialize();
+    /**
+     * Constructs a nested cache binary storage component.
+     */
+    public NestedCacheBinaryStorageComponent() {
+        super(TYPE, PluginI18n.cacheBinaryStorageDisplayName, PluginI18n.cacheBinaryStorageDescription, StorageType.BINARY);
     }
 
     /**
-     * Don't allow construction outside of this class.
+     * {@inheritDoc}
+     * 
+     * @see org.modeshape.rhq.storage.ModeShapeStorageComponent#address()
      */
-    private UtilI18n() {
-        // nothing to do
+    @Override
+    protected Address address() {
+        final CompositeBinaryStorageComponent composite = (CompositeBinaryStorageComponent)context().getParentResourceComponent();
+        final Address addr = composite.createBinaryStorageAddress();
+        addr.add(NestedCacheBinaryStorageComponent.TYPE, deploymentName());
+
+        return addr;
     }
 
 }

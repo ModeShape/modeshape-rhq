@@ -23,24 +23,16 @@
  */
 package org.modeshape.rhq;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import org.modeshape.rhq.util.I18n;
 import org.modeshape.rhq.util.ToolBox;
 import org.rhq.core.domain.configuration.Configuration;
-import org.rhq.core.domain.measurement.MeasurementData;
-import org.rhq.core.domain.measurement.MeasurementDataNumeric;
-import org.rhq.core.domain.measurement.MeasurementDataTrait;
-import org.rhq.core.domain.measurement.MeasurementReport;
-import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
+import org.rhq.core.domain.configuration.Property;
 import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.modules.plugins.jbossas7.BaseComponent;
-import org.rhq.modules.plugins.jbossas7.json.Address;
-import org.rhq.modules.plugins.jbossas7.json.ReadResource;
-import org.rhq.modules.plugins.jbossas7.json.Result;
 
 /**
  * The ModeShape RHQ AS 7 resource component base class.
@@ -61,7 +53,7 @@ public abstract class ModeShapeComponent extends BaseComponent<ModeShapeComponen
     protected ModeShapeComponent( final String componentType,
                                   final String componentDisplayName,
                                   final String componentDescription ) {
-        ToolBox.verifyNotEmpty(componentType, "facetType");
+        ToolBox.verifyNotEmpty(componentType, "componentType");
 
         this.type = componentType;
         this.displayName = (((componentDisplayName == null) || componentDisplayName.isEmpty()) ? this.type : componentDisplayName);
@@ -71,51 +63,29 @@ public abstract class ModeShapeComponent extends BaseComponent<ModeShapeComponen
     /**
      * @return the resource context (never <code>null</code>)
      */
-    protected final ResourceContext<ModeShapeComponent> context() {
+    public final ResourceContext<ModeShapeComponent> context() {
         return this.context;
     }
 
     /**
      * @return the component deployment identifier (never <code>null</code> or empty)
      */
-    protected final String deploymentName() {
+    public final String deploymentName() {
         return context().getResourceKey();
     }
 
     /**
      * @return the component description (can be <code>null</code> or empty)
      */
-    final String description() {
+    public final String description() {
         return this.description;
     }
 
     /**
      * @return the component display name (never <code>null</code> or empty)
      */
-    final String displayName() {
+    public final String displayName() {
         return this.displayName;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.rhq.modules.plugins.jbossas7.BaseComponent#getValues(org.rhq.core.domain.measurement.MeasurementReport,
-     *      java.util.Set)
-     */
-    @Override
-    public void getValues( final MeasurementReport report,
-                           final Set<MeasurementScheduleRequest> metrics ) throws Exception {
-        for (final MeasurementScheduleRequest request : metrics) {
-            final MeasurementData data = metric(request);
-
-            if (data instanceof MeasurementDataTrait) {
-                report.addData((MeasurementDataTrait)data);
-            } else if (data instanceof MeasurementDataNumeric) {
-                report.addData((MeasurementDataNumeric)data);
-            } else {
-                ModeShapePlugin.LOG.error(I18n.bind(PluginI18n.unknownMetric, request.getName(), deploymentName(), type()));
-            }
-        }
     }
 
     /**
@@ -177,41 +147,16 @@ public abstract class ModeShapeComponent extends BaseComponent<ModeShapeComponen
      */
     @Override
     public final Configuration loadResourceConfiguration() throws Exception {
-        if (shouldLoad()) {
-            final Address addr = ModeShapePlugin.createModeShapeAddress();
-            final Result result = getASConnection().execute(new ReadResource(addr));
-
-            if (result.isSuccess()) {
-                load();
-            } else {
-                throw new Exception(I18n.bind(PluginI18n.errorLoadingResource, type(), deploymentName()));
-            }
-        }
-
+        resourceConfiguration().setProperties(new ArrayList<Property>()); // clear
+        load();
         return this.resourceConfig;
     }
-
-    /**
-     * @param request the measurement request (never <code>null</code>)
-     * @return the metric date (can be <code>null</code>)
-     * @throws Exception if there is a problem obtaining the metric
-     */
-    protected abstract MeasurementData metric( final MeasurementScheduleRequest request ) throws Exception;
 
     /**
      * @return the plugin configuration used when loading properties (never <code>null</code>)
      */
     protected Configuration resourceConfiguration() {
         return this.resourceConfig;
-    }
-
-    /**
-     * Subclasses should return <code>false</code> if the configuration has been loaded and those cached values can be used.
-     * 
-     * @return <code>true</code> if the component configuration should be loaded
-     */
-    protected boolean shouldLoad() {
-        return true;
     }
 
     /**
@@ -244,7 +189,7 @@ public abstract class ModeShapeComponent extends BaseComponent<ModeShapeComponen
     /**
      * @return the component type (never <code>null</code>)
      */
-    final String type() {
+    public final String type() {
         return this.type;
     }
 

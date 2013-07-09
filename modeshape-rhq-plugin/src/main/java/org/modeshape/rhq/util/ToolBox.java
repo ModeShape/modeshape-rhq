@@ -105,6 +105,13 @@ public final class ToolBox {
         }
     }
 
+    public static void verifyPositive( final long number,
+                                       final String identifier ) {
+        if (number < 0) {
+            throw new IllegalArgumentException(I18n.bind(UtilI18n.numberIsNotPositive, number, identifier));
+        }
+    }
+
     /**
      * Don't allow construction outside this class.
      */

@@ -23,17 +23,17 @@
  */
 package org.modeshape.rhq;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.modeshape.rhq.util.ToolBox;
 import org.rhq.modules.plugins.jbossas7.json.Address;
+import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 
 /**
  * Represents an RHQ operation.
  */
-class Operation {
+public class Operation {
 
     private final Map<String, String> args;
     private final String name;
@@ -42,14 +42,14 @@ class Operation {
      * @param operationName the operation name (cannot be <code>null</code> or empty)
      * @param operationArgs the operation arguments (can be <code>null</code>)
      */
-    Operation( final String operationName,
-               final String... operationArgs ) {
+    public Operation( final String operationName,
+                      final String... operationArgs ) {
         ToolBox.verifyNotEmpty(operationName, "operationName");
         this.name = operationName;
 
         // add in arguments
         if ((operationArgs == null) || (operationArgs.length == 0)) {
-            this.args = Collections.emptyMap();
+            this.args = new HashMap<String, String>(2);
         } else {
             this.args = new HashMap<String, String>((operationArgs.length / 2));
 
@@ -60,35 +60,61 @@ class Operation {
     }
 
     /**
+     * @param name the name of the argument being added (cannot be <code>null</code> or empty)
+     * @param value the argument value (cannot be <code>null</code> or empty)
+     * @return this operation (never <code>null</code>)
+     */
+    public Operation addArg( final String name,
+                             final String value ) {
+        this.args.put(name, value);
+        return this;
+    }
+
+    /**
      * @return the arguments (never <code>null</code> but can be empty)
      */
-    Map<String, String> args() {
+    public Map<String, String> args() {
         return this.args;
     }
 
     /**
      * @return the operation name (never <code>null</code> or empty)
      */
-    String name() {
+    public String name() {
         return this.name;
     }
 
     /**
      * Common utilities associated with operations.
      */
-    static class Util {
+    public static class Util {
+
+        /**
+         * @param address the address whose read resource operation is being requested (cannot be <code>null</code>)
+         * @param includeDefaults <code>true</code> if default values should be included
+         * @return the read resource operation (never <code>null</code>)
+         */
+        public static org.rhq.modules.plugins.jbossas7.json.Operation createReadResourceOperation( final Address address,
+                                                                                                   final boolean includeDefaults ) {
+            ToolBox.verifyNotNull(address, "address");
+            final ReadResource result = new ReadResource(address);
+            result.includeDefaults(includeDefaults);
+            return result;
+        }
 
         /**
          * @param operation the operation being converted into an RHQ operation (cannot be <code>null</code>)
+         * @param address the operation address (cannot be <code>null</code>)
          * @return the RHQ operation (never <code>null</code>)
          */
-        static org.rhq.modules.plugins.jbossas7.json.Operation createRhqOperation( final Operation operation ) {
+        public static org.rhq.modules.plugins.jbossas7.json.Operation createRhqOperation( final Operation operation,
+                                                                                          final Address address ) {
             ToolBox.verifyNotNull(operation, "operation");
+            ToolBox.verifyNotNull(address, "address");
 
-            final Address addr = ModeShapePlugin.createModeShapeAddress();
             final org.rhq.modules.plugins.jbossas7.json.Operation op = new org.rhq.modules.plugins.jbossas7.json.Operation(
                                                                                                                            operation.name(),
-                                                                                                                           addr);
+                                                                                                                           address);
 
             if (operation.args() != null) {
                 for (final Entry<String, String> prop : operation.args().entrySet()) {

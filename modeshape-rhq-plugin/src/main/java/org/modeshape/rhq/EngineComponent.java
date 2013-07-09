@@ -23,8 +23,7 @@
  */
 package org.modeshape.rhq;
 
-import org.rhq.core.domain.measurement.MeasurementData;
-import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
+import org.modeshape.rhq.webapp.WebAppComponent;
 
 /**
  * The ModeShape RHQ AS 7 engine component.
@@ -33,8 +32,18 @@ public final class EngineComponent extends ModeShapeComponent {
 
     static final String DESCRIPTION = PluginI18n.engineDescription;
     static final String DISPLAY_NAME = PluginI18n.engineDisplayName;
-    static final Operation GET_REPOSITORIES = new Operation("read-children-resources", "child-type", "repository");
     public static final String TYPE = "ModeShapeEngine";
+
+    static Operation createGetRepositories() {
+        return new Operation("read-children-resources", "child-type", RepositoryComponent.TYPE);
+    }
+
+    /**
+     * @return an operation that will return web app components (never <code>null</code>)
+     */
+    public static Operation createGetWebApps() {
+        return new Operation("read-children-resources", "child-type", WebAppComponent.TYPE);
+    }
 
     /**
      * Constructs an engine component.
@@ -50,17 +59,7 @@ public final class EngineComponent extends ModeShapeComponent {
      */
     @Override
     protected void load() throws Exception {
-        // TODO implement
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.modeshape.rhq.ModeShapeComponent#metric(org.rhq.core.domain.measurement.MeasurementScheduleRequest)
-     */
-    @Override
-    protected MeasurementData metric( final MeasurementScheduleRequest request ) {
-        return null;
+        // nothing to do
     }
 
 }

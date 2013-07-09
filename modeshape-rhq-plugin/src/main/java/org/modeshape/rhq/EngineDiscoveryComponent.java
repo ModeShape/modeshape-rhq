@@ -32,11 +32,10 @@ import org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext;
 import org.rhq.modules.plugins.jbossas7.ASConnection;
 import org.rhq.modules.plugins.jbossas7.BaseComponent;
 import org.rhq.modules.plugins.jbossas7.json.Address;
-import org.rhq.modules.plugins.jbossas7.json.ReadResource;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 
 /**
- * A component used to discover the ModeShape engine.
+ * Used to discover the ModeShape engine component.
  */
 public class EngineDiscoveryComponent implements ResourceDiscoveryComponent<EngineComponent> {
 
@@ -52,7 +51,7 @@ public class EngineDiscoveryComponent implements ResourceDiscoveryComponent<Engi
         final BaseComponent<?> parentComponent = context.getParentResourceComponent();
         final ASConnection connection = parentComponent.getASConnection();
         final Address addr = ModeShapePlugin.createModeShapeAddress();
-        final Result result = connection.execute(new ReadResource(addr));
+        final Result result = connection.execute(Operation.Util.createReadResourceOperation(addr, true));
 
         if (result.isSuccess()) {
 

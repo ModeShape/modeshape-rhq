@@ -30,21 +30,55 @@ import org.modeshape.rhq.util.I18n;
  */
 public class PluginI18n extends I18n {
 
+    public static String authenticatorDescription;
+    public static String authenticatorDisplayName;
+    public static String cacheBinaryStorageDescription;
+    public static String cacheBinaryStorageDisplayName;
+    public static String compositeBinaryStorageDescription;
+    public static String compositeBinaryStorageDisplayName;
     public static String connectorDescription;
     public static String connectorDisplayName;
+    public static String customBinaryStorageDescription;
+    public static String customBinaryStorageDisplayName;
+    public static String customIndexStorageDescription;
+    public static String customIndexStorageDisplayName;
+    public static String dbBinaryStorageDescription;
+    public static String dbBinaryStorageDisplayName;
     public static String engineDescription;
     public static String engineDisplayName;
     public static String engineNotDiscovered;
+    public static String errorDiscoveringRepositories;
+    public static String errorLoadingProperties;
+    public static String errorLoadingRepositoryProperties;
     public static String errorLoadingResource;
+    public static String errorLoadingWebAppProperties;
+    public static String fileBinaryStorageDescription;
+    public static String fileBinaryStorageDisplayName;
+    public static String indexStorageDescription;
+    public static String indexStorageDisplayName;
+    public static String localFileIndexStorageDescription;
+    public static String localFileIndexStorageDisplayName;
+    public static String masterFileIndexStorageDescription;
+    public static String masterFileIndexStorageDisplayName;
     public static String noRepositoriesDiscovered;
+    public static String nullMetricsWindow;
     public static String repositoryDescription;
     public static String repositoryDisplayName;
     public static String repositoryNotFound;
     public static String sequencerDescription;
     public static String sequencerDisplayName;
+    public static String slaveFileIndexStorageDescription;
+    public static String slaveFileIndexStorageDisplayName;
+    public static String textExtractorDescription;
+    public static String textExtractorDisplayName;
+    public static String unavailableMetricValue;
+    public static String unexpectedMetricValue;
+    public static String unexpectedParentComponent;
     public static String unknownMetric;
     public static String unknownProperty;
     public static String valueNotDefined;
+    public static String webAppDescription;
+    public static String webAppDisplayName;
 
     static {
         final PluginI18n i18n = new PluginI18n();

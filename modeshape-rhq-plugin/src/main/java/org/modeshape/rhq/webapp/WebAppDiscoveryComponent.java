@@ -21,12 +21,15 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.modeshape.rhq;
+package org.modeshape.rhq.webapp;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.modeshape.rhq.EngineComponent;
+import org.modeshape.rhq.ModeShapePlugin;
+import org.modeshape.rhq.Operation;
 import org.rhq.core.domain.configuration.Configuration;
 import org.rhq.core.pluginapi.inventory.DiscoveredResourceDetails;
 import org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent;
@@ -37,9 +40,9 @@ import org.rhq.modules.plugins.jbossas7.json.Address;
 import org.rhq.modules.plugins.jbossas7.json.Result;
 
 /**
- * Used to discover the ModeShape repository components.
+ * Used to discover the ModeShape web application components.
  */
-public class RepositoryDiscoveryComponent implements ResourceDiscoveryComponent<RepositoryComponent> {
+public class WebAppDiscoveryComponent implements ResourceDiscoveryComponent<WebAppComponent> {
 
     /**
      * {@inheritDoc}
@@ -47,7 +50,7 @@ public class RepositoryDiscoveryComponent implements ResourceDiscoveryComponent<
      * @see org.rhq.core.pluginapi.inventory.ResourceDiscoveryComponent#discoverResources(org.rhq.core.pluginapi.inventory.ResourceDiscoveryContext)
      */
     @Override
-    public Set<DiscoveredResourceDetails> discoverResources( final ResourceDiscoveryContext<RepositoryComponent> context )
+    public Set<DiscoveredResourceDetails> discoverResources( final ResourceDiscoveryContext<WebAppComponent> context )
         throws Exception {
         final BaseComponent<?> parentComponent = context.getParentResourceComponent();
         final ASConnection connection = parentComponent.getASConnection();
@@ -55,41 +58,37 @@ public class RepositoryDiscoveryComponent implements ResourceDiscoveryComponent<
         final Result result = connection.execute(Operation.Util.createReadResourceOperation(addr, true));
 
         if (result.isSuccess()) {
-            final Result repoResult = connection.execute(Operation.Util.createRhqOperation(EngineComponent.createGetRepositories(),
-                                                                                           ModeShapePlugin.createModeShapeAddress()));
-            final Object temp = repoResult.getResult();
+            final Result webAppResult = connection.execute(Operation.Util.createRhqOperation(EngineComponent.createGetWebApps(),
+                                                                                             ModeShapePlugin.createModeShapeAddress()));
+            final Object temp = webAppResult.getResult();
 
             if ((temp != null) && (temp instanceof Map<?, ?>)) {
-                final Map<?, ?> repoMap = (Map<?, ?>)temp;
+                final Map<?, ?> webAppMap = (Map<?, ?>)temp;
 
-                // no repositories found
-                if (repoMap.isEmpty()) {
-                    ModeShapePlugin.LOG.warn(PluginI18n.noRepositoriesDiscovered);
-                    return Collections.emptySet();
+                if (!webAppMap.isEmpty()) {
+                    // construct detail record for each web app and set properties
+                    final Set<DiscoveredResourceDetails> discoveredResources = new HashSet<DiscoveredResourceDetails>(
+                                                                                                                      webAppMap.size());
+                    DiscoveredResourceDetails detail = null;
+
+                    for (final Object key : webAppMap.keySet()) {
+                        // context.getDefaultPluginConfiguration() returns a new config which is needed
+                        final Configuration config = context.getDefaultPluginConfiguration(); // needs to stay inside loop
+                        final String webAppName = (String)key;
+
+                        detail = new DiscoveredResourceDetails(context.getResourceType(), webAppName, webAppName,
+                                                               ModeShapePlugin.VERSION,
+                                                               context.getResourceType().getDescription(), config, null);
+
+                        discoveredResources.add(detail);
+                        ModeShapePlugin.LOG.debug("Discovered ModeShape web app: " + webAppName);
+                    }
+
+                    return discoveredResources;
                 }
-
-                // construct detail record for each repository and set properties
-                final Set<DiscoveredResourceDetails> discoveredResources = new HashSet<DiscoveredResourceDetails>(repoMap.size());
-                DiscoveredResourceDetails detail = null;
-
-                for (final Object key : repoMap.keySet()) {
-                    // context.getDefaultPluginConfiguration() returns a new config which is needed
-                    final Configuration config = context.getDefaultPluginConfiguration(); // needs to stay inside loop
-                    final String repoName = (String)key;
-
-                    detail = new DiscoveredResourceDetails(context.getResourceType(), repoName, repoName,
-                                                           ModeShapePlugin.VERSION, context.getResourceType().getDescription(),
-                                                           config, null);
-
-                    discoveredResources.add(detail);
-                    ModeShapePlugin.LOG.debug("Discovered ModeShape Repository: " + repoName);
-                }
-
-                return discoveredResources;
             }
         }
 
-        ModeShapePlugin.LOG.error(PluginI18n.errorDiscoveringRepositories);
         return Collections.emptySet();
     }
 

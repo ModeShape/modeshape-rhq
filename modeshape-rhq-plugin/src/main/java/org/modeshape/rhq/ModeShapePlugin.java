@@ -32,13 +32,13 @@ import org.rhq.modules.plugins.jbossas7.json.Address;
  */
 public class ModeShapePlugin {
 
-    static final Log LOG = LogFactory.getLog(ModeShapePlugin.class);
+    public static final Log LOG = LogFactory.getLog(ModeShapePlugin.class);
 
     private static final String MODESHAPE_SUBSYSTEM = "modeshape";
 
-    static final String VERSION = "3.2.0"; // TODO need get get this dynamically
+    public static final String VERSION = "3.4.0"; // TODO need get get this dynamically (maybe from an engine attribute)
 
-    static Address createModeShapeAddress() {
+    public static Address createModeShapeAddress() {
         final Address addr = new Address(MODESHAPE_SUBSYSTEM);
         addr.add("subsystem", MODESHAPE_SUBSYSTEM);
         return addr;
