@@ -11,7 +11,7 @@
 
     <groupId>org.modeshape</groupId>
     <artifactId>modeshape-rhq-parent</artifactId>
-    <version>3.4-SNAPSHOT</version>
+    <version>3.6-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ModeShape RHQ Parent</name>
     <description>The ModeShape RHQ plugin runs in RHQ and monitors and manages the Teiid server.</description>
