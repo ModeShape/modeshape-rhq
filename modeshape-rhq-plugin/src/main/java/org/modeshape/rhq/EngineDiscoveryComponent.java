@@ -73,7 +73,7 @@ public class EngineDiscoveryComponent implements ResourceDiscoveryComponent<Engi
             discoveredResources.add(detail);
             ModeShapePlugin.LOG.debug("Discovered ModeShape Engine");
         } else {
-            ModeShapePlugin.LOG.error(PluginI18n.engineNotDiscovered);
+            ModeShapePlugin.LOG.debug(PluginI18n.engineNotDiscovered);
         }
 
         return discoveredResources;
