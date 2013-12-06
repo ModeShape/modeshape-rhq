@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>modeshape-rhq-parent</artifactId>
 		<groupId>org.modeshape</groupId>
-		<version>3.6-SNAPSHOT</version>
+		<version>3.7-SNAPSHOT</version>
 		<relativePath>modeshape-rhq-parent/pom.xml</relativePath>
 	</parent>
 
